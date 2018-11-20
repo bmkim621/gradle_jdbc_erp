@@ -6,18 +6,13 @@ import java.util.List;
 import gradle_jdbc_erp.dto.Department;
 
 public interface DepartmentDao {
-	List<Department> selectDepartmentByAll();
+	List<Department> selectDepartmentByAll() throws SQLException;
 	
-	//추가
-	int insertDepartment(Department department) throws SQLException;
+	int insertDepartment(Department dept) throws SQLException;
 	
-	//수정
-	int updateDepartment(Department department) throws SQLException;
+	int deleteDepartment(Department dept) throws SQLException;
 	
-	//삭제
-	int deleteDepartment(Department department) throws SQLException;
+	int updateDepartment(Department dept) throws SQLException;
 	
-	//검색
-	Department selectDepartmentByNo(Department department) throws SQLException;
-
+	Department selectDepartmentByCode(Department dept) throws SQLException;
 }

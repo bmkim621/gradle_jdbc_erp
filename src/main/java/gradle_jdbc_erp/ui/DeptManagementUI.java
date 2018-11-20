@@ -25,22 +25,6 @@ public class DeptManagementUI extends JFrame {
 	private JTextField textField_2;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					DeptManagementUI frame = new DeptManagementUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
 	public DeptManagementUI() {
