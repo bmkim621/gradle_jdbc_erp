@@ -8,11 +8,11 @@ import gradle_jdbc_erp.dto.Department;
 public interface DepartmentDao {
 	List<Department> selectDepartmentByAll() throws SQLException;
 	
-	int insertDepartment(Department dept) throws SQLException;
+	int insertDepartment(Department item) throws SQLException;
 	
-	int deleteDepartment(Department dept) throws SQLException;
+	int deleteDepartment(Department item) throws SQLException;
 	
-	int updateDepartment(Department dept) throws SQLException;
+	int updateDepartment(Department item) throws SQLException;
 	
-	Department selectDepartmentByCode(Department dept) throws SQLException;
+	Department selectDepartmentByCode(Department item) throws SQLException;
 }

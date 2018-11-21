@@ -40,25 +40,55 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
 
 	@Override
-	public int insertDepartment(Department dept) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public int insertDepartment(Department item) throws SQLException {
+		String sql = "insert into department values (?, ?, ?)";
+		int res = 0;
+		try(Connection conn = ConnectionProvider.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql);){
+			pstmt.setString(1, item.getDeptNo());
+			pstmt.setString(2, item.getDeptName());
+			pstmt.setInt(3, item.getFloor());
+			
+			LogUtil.prnLog(pstmt);
+			
+			res = pstmt.executeUpdate();
+		}
+		return res;
 	}
 
 	@Override
-	public int deleteDepartment(Department dept) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public int deleteDepartment(Department item) throws SQLException {
+		String sql = "delete from department where deptno = ?";
+		int res = 0;
+		
+		try(Connection conn = ConnectionProvider.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql);){
+			pstmt.setString(1, item.getDeptNo());
+			LogUtil.prnLog(pstmt);
+			
+			res = pstmt.executeUpdate();
+		}
+		return res;
 	}
 
 	@Override
-	public int updateDepartment(Department dept) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public int updateDepartment(Department item) throws SQLException {
+		String sql = "update department set deptname = ?, floor = ? where deptno = ?";
+		int res = 0;
+		
+		try(Connection conn = ConnectionProvider.getConnection();
+		PreparedStatement pstmt = conn.prepareStatement(sql);){
+			pstmt.setString(1, item.getDeptName());
+			pstmt.setInt(2, item.getFloor());
+			pstmt.setString(3, item.getDeptNo());
+			
+			res = pstmt.executeUpdate();
+		}
+		return res;
 	}
 
 	@Override
-	public Department selectDepartmentByCode(Department dept) throws SQLException {
+	public Department selectDepartmentByCode(Department item) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}

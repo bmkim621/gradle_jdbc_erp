@@ -9,10 +9,13 @@ import javax.swing.border.EmptyBorder;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class ErpManagementUI extends JFrame {
+public class ErpManagementUI extends JFrame implements ActionListener {
 
 	private JPanel contentPane;
+	private JButton btnDept;
 
 	/**
 	 * Create the frame.
@@ -30,7 +33,8 @@ public class ErpManagementUI extends JFrame {
 		btnEmp.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		contentPane.add(btnEmp);
 		
-		JButton btnDept = new JButton("부서관리");
+		btnDept = new JButton("부서관리");
+		btnDept.addActionListener(this);
 		btnDept.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		contentPane.add(btnDept);
 		
@@ -39,4 +43,15 @@ public class ErpManagementUI extends JFrame {
 		contentPane.add(btnDuty);
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnDept) {
+			do_btnDept_actionPerformed(e);
+		}
+	}
+	
+	//부서관리 버튼
+	protected void do_btnDept_actionPerformed(ActionEvent e) {
+		DeptManagementUI ui = new DeptManagementUI();
+		ui.setVisible(true);
+	}
 }
