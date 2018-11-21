@@ -7,7 +7,10 @@ import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 import gradle_jdbc_erp.dto.Department;
 
@@ -36,7 +39,33 @@ public class DeptListPanel extends JPanel {
 		
 		table = new JTable();
 		scrollPane.setViewportView(table);
+		
+//		setAlignWidth();
 	}
+	
+	/*private void setAlignWidth() {
+		tableCellAlignment(SwingConstants.CENTER, 0, 1, 2);
+		tableSetWidth(150, 150, 150);
+		
+	}
+	
+	//정렬
+	private void tableCellAlignment(int align, int...idx) {
+		DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
+		dtcr.setHorizontalAlignment(align);
+		TableColumnModel tcm = table.getColumnModel();
+		for(int i = 0 ; i < idx.length ; i++) {
+			tcm.getColumn(idx[i]).setCellRenderer(dtcr);
+		}
+	}
+	
+	//너비
+	private void tableSetWidth(int...width) {
+		TableColumnModel tcm = table.getColumnModel();
+		for(int i = 0 ; i < width.length ; i++) {
+			tcm.getColumn(i).setPreferredWidth(width[i]);
+		}
+	}*/
 	
 	//데이터 불러오기
 	public void loadDatas() {

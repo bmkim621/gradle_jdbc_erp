@@ -7,11 +7,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import gradle_jdbc_erp.dao.DepartmentDao;
+import gradle_jdbc_erp.dto.Department;
 import gradle_jdbc_erp.service.DeptUIService;
 
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
@@ -31,13 +34,28 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 	private JTextField tfFloor;
 	private DeptUIService service;
 	private JButton btnAdd;
+/*	
+	private DepartmentDao dao;
+	
+	public void setDao(DepartmentDao dao) {
+		this.dao = dao;
+	}*/
+
+	//DeptListPanel을 사용할 수 있도록 필드로 정의
+	private DeptListPanel pTable;
+	
+	//DeptListPanel의 참조주소를 넘겨준다. getters/setters
+	public void setpTable(DeptListPanel pTable) {
+		this.pTable = pTable;
+	}
+	
 	/**
 	 * Create the frame.
 	 */
 	public DeptManagementUI() {
 		service = new DeptUIService();
 		setTitle("부서 관리");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 390, 350);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -111,7 +129,7 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 		JLabel lblNewLabel_6 = new JLabel("");
 		pButton2.add(lblNewLabel_6);
 		
-		DeptListPanel pTable = new DeptListPanel();
+		pTable = new DeptListPanel();
 		try {
 			pTable.setList(service.selectAll());
 			pTable.loadDatas();
@@ -128,9 +146,37 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 		}
 	}
 	
-	//추가
+	//추가 => Department 테이블에 insert
 	protected void do_btnAdd_actionPerformed(ActionEvent e) {
+		Department dept = getDepartment();
+		int res;
+		try {
+			res = service.addDept(dept);
+			if(res == 1) {	//1 : 정상적으로 추가
+				JOptionPane.showMessageDialog(null, "추가했습니다.");
+				pTable.loadDatas();
+			}
+			clearTf();	//추가 후 텍스트필드 초기화
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 		
 		
+	}
+
+	//텍스트 필드 초기화하기
+	private void clearTf() {
+//		tfDeptNo.setText("");
+		tfDeptName.setText("");
+		tfFloor.setText("");	
+	}
+
+	//텍스트 필드에 입력한 값 가지고 오기
+	private Department getDepartment() {
+		String deptNo = tfDeptNo.getText().trim();
+		String deptName = tfDeptName.getText().trim();
+		int floor = Integer.parseInt(tfFloor.getText().trim());
+		
+		return new Department(deptNo, deptName, floor);
 	}
 }
