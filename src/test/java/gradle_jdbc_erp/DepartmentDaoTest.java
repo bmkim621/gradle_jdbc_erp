@@ -95,5 +95,16 @@ public class DepartmentDaoTest {
 		}
 		test01selectDepartmentByAll();
 	}
+	
+	@Test
+	public void test05nextNo() {
+		try {
+			String nextNo = dao.nextDeptNo();
+			LogUtil.prnLog("nextNo :" + nextNo);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }

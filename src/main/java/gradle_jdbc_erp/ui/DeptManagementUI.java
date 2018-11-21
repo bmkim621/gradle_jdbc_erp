@@ -20,14 +20,17 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.sql.SQLException;
 import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class DeptManagementUI extends JFrame {
+public class DeptManagementUI extends JFrame implements ActionListener {
 
 	private JPanel contentPane;
 	private JTextField tfDeptNo;
 	private JTextField tfDeptName;
 	private JTextField tfFloor;
 	private DeptUIService service;
+	private JButton btnAdd;
 	/**
 	 * Create the frame.
 	 */
@@ -52,6 +55,12 @@ public class DeptManagementUI extends JFrame {
 		
 		tfDeptNo = new JTextField();
 		tfDeptNo.setEnabled(false);
+		try {
+			tfDeptNo.setText(service.nextDeptNo());
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		panel.add(tfDeptNo);
 		tfDeptNo.setColumns(10);
 		
@@ -83,7 +92,8 @@ public class DeptManagementUI extends JFrame {
 		JLabel lblNewLabel_4 = new JLabel("");
 		pButton1.add(lblNewLabel_4);
 		
-		JButton btnAdd = new JButton("추가");
+		btnAdd = new JButton("추가");
+		btnAdd.addActionListener(this);
 		btnAdd.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		pButton1.add(btnAdd);
 		
@@ -112,4 +122,14 @@ public class DeptManagementUI extends JFrame {
 		contentPane.add(pTable, BorderLayout.CENTER);
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnAdd) {
+			do_btnAdd_actionPerformed(e);
+		}
+	}
+	
+	//추가
+	protected void do_btnAdd_actionPerformed(ActionEvent e) {
+		
+	}
 }

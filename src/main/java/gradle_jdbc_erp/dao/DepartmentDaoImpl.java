@@ -93,4 +93,21 @@ public class DepartmentDaoImpl implements DepartmentDao {
 		return null;
 	}
 
+	@Override
+	public String nextDeptNo() throws SQLException {
+		String sql = "select max(deptno) as nextno from department";
+		String nextStr = null;
+		try(Connection conn = ConnectionProvider.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				ResultSet rs = pstmt.executeQuery()){
+			LogUtil.prnLog(pstmt);
+			if(rs.next()) {
+				nextStr = String.format("D%03d", Integer.parseInt(rs.getString("nextno").substring(1)) + 1);
+			}
+		} catch(SQLException e1) {
+			e1.printStackTrace();
+		}
+		return nextStr;
+	}
+
 }

@@ -17,4 +17,9 @@ public class DeptUIService {
 	public List<Department> selectAll() throws SQLException {
 		return deptDao.selectDepartmentByAll();
 	}
+	
+	
+	public String nextDeptNo() throws SQLException {
+		return deptDao.nextDeptNo();
+	}
 }
