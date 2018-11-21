@@ -131,5 +131,6 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 	//추가
 	protected void do_btnAdd_actionPerformed(ActionEvent e) {
 		
+		
 	}
 }

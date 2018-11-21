@@ -18,8 +18,11 @@ public class DeptUIService {
 		return deptDao.selectDepartmentByAll();
 	}
 	
-	
 	public String nextDeptNo() throws SQLException {
 		return deptDao.nextDeptNo();
+	}
+	
+	public int addDept(Department item) throws SQLException{
+		return deptDao.insertDepartment(item);
 	}
 }
