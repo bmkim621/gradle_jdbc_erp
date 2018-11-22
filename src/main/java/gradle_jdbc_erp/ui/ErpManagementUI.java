@@ -71,6 +71,7 @@ public class ErpManagementUI extends JFrame implements ActionListener {
 		ui.setVisible(true);
 	}
 	
+	//사원관리 버튼
 	protected void do_btnEmp_actionPerformed(ActionEvent e) {
 		EmpManagementUI ui = new EmpManagementUI();
 		ui.setVisible(true);

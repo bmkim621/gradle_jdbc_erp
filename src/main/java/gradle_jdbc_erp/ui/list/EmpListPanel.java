@@ -1,9 +1,13 @@
 package gradle_jdbc_erp.ui.list;
 
+import java.util.Date;
+
 import javax.swing.SwingConstants;
 
+import gradle_jdbc_erp.dto.Department;
 import gradle_jdbc_erp.dto.Employee;
 import gradle_jdbc_erp.dto.Gender;
+import gradle_jdbc_erp.dto.Title;
 
 @SuppressWarnings("serial")
 public class EmpListPanel extends AbstractListPanel<Employee> {
@@ -12,7 +16,7 @@ public class EmpListPanel extends AbstractListPanel<Employee> {
 	protected void setAlignWidth() {
 		tableCellAlignment(SwingConstants.CENTER, 0, 1, 2, 4, 5, 6);
 		tableCellAlignment(SwingConstants.RIGHT, 3);
-		tableSetWidth(150, 150, 100, 200, 100, 150, 150);
+		tableSetWidth(180, 150, 100, 150, 100, 150, 180);
 
 	}
 
@@ -36,15 +40,16 @@ public class EmpListPanel extends AbstractListPanel<Employee> {
 	}
 	
 	@Override
-	public Employee getSelectedItem() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	protected Employee getItem(int selectedIndex) {
-		// TODO Auto-generated method stub
-		return null;
+		String empNo = (String) table.getValueAt(selectedIndex, 0);	//사원번호
+		String empName = (String) table.getValueAt(selectedIndex, 1);	//사원명
+		Title titleNo = (Title) table.getValueAt(selectedIndex, 2);	//사원번호
+		int salary = (int) table.getValueAt(selectedIndex, 3);	//급여
+		Gender gender = (Gender) table.getValueAt(selectedIndex, 4);	//성별
+		Department deptNo = (Department) table.getValueAt(selectedIndex, 5);	//부서
+		Date joinDate = (Date) table.getValueAt(selectedIndex, 6);	//입사일
+		
+		return new Employee(empNo, empName, titleNo, salary, gender, deptNo, joinDate);
 	}
 
 

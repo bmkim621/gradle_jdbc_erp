@@ -6,52 +6,61 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.MaskFormatter;
 
+import gradle_jdbc_erp.service.EmployeeUIService;
 import gradle_jdbc_erp.ui.list.EmpListPanel;
 
 import java.awt.GridLayout;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.time.LocalDate;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JSpinner;
 import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.Font;
+import javax.swing.SpinnerNumberModel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class EmpManagementUI extends JFrame {
+public class EmpManagementUI extends JFrame implements ActionListener {
 
 	private JPanel contentPane;
 	private JTextField tfEmpNo;
 	private JTextField tfEmpName;
 	private JTextField tfJoinDate;
+	private EmpListPanel pTable;
+	private EmployeeUIService empService;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					EmpManagementUI frame = new EmpManagementUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+	//라디오버튼 하나만 선택되려면 그룹으로 묶어야 함
+	private final ButtonGroup buttonGroup = new ButtonGroup();
+	private JRadioButton rdbtnMale;
+	private JRadioButton rdbtnFemale;
+	private JFormattedTextField currentDate;
+	
+	public void setpTable(EmpListPanel pTable) {
+		this.pTable = pTable;
 	}
-
+	
 	/**
 	 * Create the frame.
 	 */
 	public EmpManagementUI() {
+		setResizable(false);
+		empService = new EmployeeUIService();
 		initComponents();
 	}
 	private void initComponents() {
 		setTitle("사원 관리");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 515, 533);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 530, 533);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 20));
@@ -66,11 +75,18 @@ public class EmpManagementUI extends JFrame {
 		
 		JLabel lblEmpNo = new JLabel("번호");
 		lblEmpNo.setFont(new Font("맑은 고딕", Font.BOLD, 12));
-		lblEmpNo.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblEmpNo.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblEmpNo);
 		
+		//사원번호
 		tfEmpNo = new JTextField();
 		tfEmpNo.setEditable(false);
+		try {
+			tfEmpNo.setText(empService.nextEmpNo());
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		panel.add(tfEmpNo);
 		tfEmpNo.setColumns(10);
 		
@@ -82,7 +98,7 @@ public class EmpManagementUI extends JFrame {
 		
 		JLabel lblEmpName = new JLabel("사원명");
 		lblEmpName.setFont(new Font("맑은 고딕", Font.BOLD, 12));
-		lblEmpName.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblEmpName.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblEmpName);
 		
 		tfEmpName = new JTextField();
@@ -97,7 +113,7 @@ public class EmpManagementUI extends JFrame {
 		
 		JLabel lblTitleNo = new JLabel("직책");
 		lblTitleNo.setFont(new Font("맑은 고딕", Font.BOLD, 12));
-		lblTitleNo.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTitleNo.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblTitleNo);
 		
 		JComboBox comboBox = new JComboBox();
@@ -111,11 +127,13 @@ public class EmpManagementUI extends JFrame {
 		
 		JLabel lblSalary = new JLabel("급여");
 		lblSalary.setFont(new Font("맑은 고딕", Font.BOLD, 12));
-		lblSalary.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblSalary.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblSalary);
 		
-		JSpinner spinner = new JSpinner();
-		panel.add(spinner);
+		JSpinner spinnerSalary = new JSpinner();
+													//기본값, 최소값, 최대값, stepSize
+		spinnerSalary.setModel(new SpinnerNumberModel(1500000, 1000000, 5000000, 100000));
+		panel.add(spinnerSalary);
 		
 		JLabel lblNewLabel_11 = new JLabel("");
 		panel.add(lblNewLabel_11);
@@ -125,20 +143,25 @@ public class EmpManagementUI extends JFrame {
 		
 		JLabel lblGender = new JLabel("성별");
 		lblGender.setFont(new Font("맑은 고딕", Font.BOLD, 12));
-		lblGender.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblGender.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblGender);
 		
 		JPanel panel_1 = new JPanel();
 		panel.add(panel_1);
 		panel_1.setLayout(new GridLayout(0, 2, 10, 0));
 		
-		JRadioButton rdbtnNewRadioButton = new JRadioButton("남");
-		rdbtnNewRadioButton.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-		panel_1.add(rdbtnNewRadioButton);
+		rdbtnMale = new JRadioButton("남");
+		rdbtnMale.setSelected(true);	//남자가 선택되어짐
+		buttonGroup.add(rdbtnMale); //라디오 버튼 그룹
+		rdbtnMale.addActionListener(this);
+		rdbtnMale.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+		panel_1.add(rdbtnMale);
 		
-		JRadioButton rdbtnNewRadioButton_1 = new JRadioButton("여");
-		rdbtnNewRadioButton_1.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-		panel_1.add(rdbtnNewRadioButton_1);
+		rdbtnFemale = new JRadioButton("여");
+		rdbtnFemale.addActionListener(this);
+		buttonGroup.add(rdbtnFemale);
+		rdbtnFemale.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+		panel_1.add(rdbtnFemale);
 		
 		JLabel lblNewLabel_14 = new JLabel("");
 		panel.add(lblNewLabel_14);
@@ -148,7 +171,7 @@ public class EmpManagementUI extends JFrame {
 		
 		JLabel lblDeptNo = new JLabel("부서");
 		lblDeptNo.setFont(new Font("맑은 고딕", Font.BOLD, 12));
-		lblDeptNo.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblDeptNo.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblDeptNo);
 		
 		JComboBox comboBox_1 = new JComboBox();
@@ -162,10 +185,12 @@ public class EmpManagementUI extends JFrame {
 		
 		JLabel lblJoinDate = new JLabel("입사일");
 		lblJoinDate.setFont(new Font("맑은 고딕", Font.BOLD, 12));
-		lblJoinDate.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblJoinDate.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblJoinDate);
 		
+		//입사일
 		tfJoinDate = new JTextField();
+		
 		panel.add(tfJoinDate);
 		tfJoinDate.setColumns(10);
 		
@@ -200,8 +225,30 @@ public class EmpManagementUI extends JFrame {
 		JPanel panel_5 = new JPanel();
 		panel.add(panel_5);
 		
-		EmpListPanel pTable = new EmpListPanel();
+		pTable = new EmpListPanel();
+		try {
+			pTable.setList(empService.selectAll());
+			pTable.loadDatas();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		contentPane.add(pTable, BorderLayout.CENTER);
 	}
 
+	public void actionPerformed(ActionEvent arg0) {
+		if (arg0.getSource() == rdbtnFemale) {
+			do_rdbtnFemale_actionPerformed(arg0);
+		}
+		if (arg0.getSource() == rdbtnMale) {
+			do_rdbtnMale_actionPerformed(arg0);
+		}
+	}
+	
+	//남자
+	protected void do_rdbtnMale_actionPerformed(ActionEvent arg0) {
+	}
+	
+	//여자
+	protected void do_rdbtnFemale_actionPerformed(ActionEvent arg0) {
+	}
 }

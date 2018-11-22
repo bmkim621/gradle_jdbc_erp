@@ -37,9 +37,7 @@ public abstract class AbstractListPanel<T> extends JPanel {
 		add(scrollPane, BorderLayout.CENTER);
 		
 		table = new JTable();
-		scrollPane.setViewportView(table);
-		
-		
+		scrollPane.setViewportView(table);	
 	}
 	
 	protected abstract void setAlignWidth();
@@ -100,6 +98,7 @@ public abstract class AbstractListPanel<T> extends JPanel {
 
 	protected abstract T getItem(int selectedIndex);
 	
+	//내부클래스
 	class MyTableModel extends DefaultTableModel {
 
 		public MyTableModel(Object[][] data, Object[] columnNames) {
