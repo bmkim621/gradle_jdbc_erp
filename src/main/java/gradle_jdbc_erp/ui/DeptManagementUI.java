@@ -41,10 +41,9 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 		this.dao = dao;
 	}*/
 
-	//DeptListPanel을 사용할 수 있도록 필드로 정의
+	
 	private DeptListPanel pTable;
 	
-	//DeptListPanel의 참조주소를 넘겨준다. getters/setters
 	public void setpTable(DeptListPanel pTable) {
 		this.pTable = pTable;
 	}
