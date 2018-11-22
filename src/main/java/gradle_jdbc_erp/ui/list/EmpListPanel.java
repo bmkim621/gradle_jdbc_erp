@@ -3,6 +3,7 @@ package gradle_jdbc_erp.ui.list;
 import javax.swing.SwingConstants;
 
 import gradle_jdbc_erp.dto.Employee;
+import gradle_jdbc_erp.dto.Gender;
 
 @SuppressWarnings("serial")
 public class EmpListPanel extends AbstractListPanel<Employee> {
@@ -22,8 +23,16 @@ public class EmpListPanel extends AbstractListPanel<Employee> {
 
 	@Override
 	protected Object[] getItemRows(Employee item) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new Object[] {
+				item.getEmpNo(),
+				item.getEmpName(),
+				item.getTitleNo().getTitleName(),
+				String.format("%,d", item.getSalary()),
+				item.getGender() == Gender.FEMALE ? "여자" : "남자",
+				String.format("%s(%d층)" , item.getDeptNo().getDeptName(), item.getDeptNo().getFloor()),
+				item.getJoinDate()
+		};
 	}
 	
 	@Override
