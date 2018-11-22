@@ -55,7 +55,7 @@ public class DepartmentDaoTest {
 	}
 	
 	@Test
-	public void test02insertDepartment() {
+	public void test02insertDepartment() throws SQLException {
 		LogUtil.prnLog("==> insertDepartment()");
 		Department newDept = new Department("D006", "연구", 8);
 		try {
@@ -66,7 +66,7 @@ public class DepartmentDaoTest {
 			if(e.getErrorCode() == 1062) {
 				JOptionPane.showMessageDialog(null, "이미 존재하는 부서입니다.");
 			}
-		}	
+		}
 	}
 	
 	@Test

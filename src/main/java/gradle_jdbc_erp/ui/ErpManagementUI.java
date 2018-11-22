@@ -16,6 +16,7 @@ public class ErpManagementUI extends JFrame implements ActionListener {
 
 	private JPanel contentPane;
 	private JButton btnDept;
+	private JButton btnDuty;
 
 	/**
 	 * Create the frame.
@@ -38,12 +39,16 @@ public class ErpManagementUI extends JFrame implements ActionListener {
 		btnDept.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		contentPane.add(btnDept);
 		
-		JButton btnDuty = new JButton("직책관리");
+		btnDuty = new JButton("직책관리");
+		btnDuty.addActionListener(this);
 		btnDuty.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		contentPane.add(btnDuty);
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnDuty) {
+			do_btnDuty_actionPerformed(e);
+		}
 		if (e.getSource() == btnDept) {
 			do_btnDept_actionPerformed(e);
 		}
@@ -52,6 +57,12 @@ public class ErpManagementUI extends JFrame implements ActionListener {
 	//부서관리 버튼
 	protected void do_btnDept_actionPerformed(ActionEvent e) {
 		DeptManagementUI ui = new DeptManagementUI();
+		ui.setVisible(true);
+	}
+	
+	//직책관리 버튼
+	protected void do_btnDuty_actionPerformed(ActionEvent e) {
+		TitleManagementUI ui = new TitleManagementUI();
 		ui.setVisible(true);
 	}
 }

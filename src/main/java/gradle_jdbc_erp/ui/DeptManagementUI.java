@@ -1,31 +1,29 @@
 package gradle_jdbc_erp.ui;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import gradle_jdbc_erp.dao.DepartmentDao;
 import gradle_jdbc_erp.dto.Department;
 import gradle_jdbc_erp.service.DeptUIService;
+import gradle_jdbc_erp.ui.list.AbstractListPanel;
+import gradle_jdbc_erp.ui.list.DeptListPanel;
 
-import java.awt.GridLayout;
-import java.awt.FlowLayout;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.sql.SQLException;
-import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
+@SuppressWarnings("serial")
 public class DeptManagementUI extends JFrame implements ActionListener {
 
 	private JPanel contentPane;
@@ -34,15 +32,9 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 	private JTextField tfFloor;
 	private DeptUIService service;
 	private JButton btnAdd;
-/*	
-	private DepartmentDao dao;
 	
-	public void setDao(DepartmentDao dao) {
-		this.dao = dao;
-	}*/
-
-	
-	private DeptListPanel pTable;
+	private AbstractListPanel<Department> pTable;
+	private JButton btnCancel;
 	
 	public void setpTable(DeptListPanel pTable) {
 		this.pTable = pTable;
@@ -53,6 +45,11 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 	 */
 	public DeptManagementUI() {
 		service = new DeptUIService();
+		initComponents();
+	}
+	private void initComponents() {
+		setResizable(false);
+		
 		setTitle("부서 관리");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 390, 350);
@@ -118,7 +115,8 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 		panel.add(pButton2);
 		pButton2.setLayout(new GridLayout(0, 3, 0, 0));
 		
-		JButton btnCancel = new JButton("취소");
+		btnCancel = new JButton("취소");
+		btnCancel.addActionListener(this);
 		btnCancel.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		pButton2.add(btnCancel);
 		
@@ -132,6 +130,7 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 		try {
 			pTable.setList(service.selectAll());
 			pTable.loadDatas();
+			pTable.setPopupMenu(createDeptPopupMenu());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -140,9 +139,44 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btnAdd) {
+		if(e.getActionCommand().equals("추가")) {
 			do_btnAdd_actionPerformed(e);
 		}
+		if (e.getActionCommand().equals("수정")) {
+			do_btnUpdate_actionPerformed(e);
+		}
+		if (e.getActionCommand().equals("취소")) {
+			dispose();
+		}
+/*		if (e.getSource() == btnCancel) {
+			dispose();
+		}
+		if (e.getSource() == btnAdd) {
+			if(btnAdd.getText().equals("추가")) {
+				do_btnAdd_actionPerformed(e);
+			}
+			else{
+				
+			}
+		}*/
+	}
+	
+	//수정버튼
+	public void do_btnUpdate_actionPerformed(ActionEvent e) {
+		Department dept = getDepartment();
+		int res;
+		try {
+			res = service.updateDept(dept);
+			if(res == 1) {
+				JOptionPane.showMessageDialog(null, "수정했습니다.");
+				pTable.setList(service.selectAll());
+				pTable.loadDatas();
+			}
+			clearTf();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		btnAdd.setText("추가");
 	}
 	
 	//추가 => Department 테이블에 insert
@@ -153,19 +187,22 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 			res = service.addDept(dept);
 			if(res == 1) {	//1 : 정상적으로 추가
 				JOptionPane.showMessageDialog(null, "추가했습니다.");
+				pTable.setList(service.selectAll());
 				pTable.loadDatas();
 			}
 			clearTf();	//추가 후 텍스트필드 초기화
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-		
-		
 	}
 
 	//텍스트 필드 초기화하기
 	private void clearTf() {
-//		tfDeptNo.setText("");
+		try {
+			tfDeptNo.setText(service.nextDeptNo());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		tfDeptName.setText("");
 		tfFloor.setText("");	
 	}
@@ -177,5 +214,51 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 		int floor = Integer.parseInt(tfFloor.getText().trim());
 		
 		return new Department(deptNo, deptName, floor);
+	}
+	
+	//새로운 값으로 바꾸기
+	private void setDepartment(Department dept) {
+		tfDeptNo.setText(dept.getDeptNo());
+		tfDeptName.setText(dept.getDeptName());
+		tfFloor.setText(dept.getFloor()+"");
+	}
+	//팝업메뉴
+	private JPopupMenu createDeptPopupMenu() {
+		JPopupMenu popupMenu = new JPopupMenu();
+		//수정
+		JMenuItem updateItem = new JMenuItem("수정");
+		updateItem.addActionListener(e->{
+			Department selectedDept = pTable.getSelectedItem();
+			setDepartment(selectedDept);
+			btnAdd.setText("수정");
+		});
+/*		updateItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				Department selectedDept = pTable.getSelectedDept();
+				setDepartment(selectedDept);
+				btnAdd.setText("수정");
+//확인			JOptionPane.showMessageDialog(null, selectedDept);
+			}
+		});*/
+		popupMenu.add(updateItem);
+		
+		JMenuItem delItem = new JMenuItem("삭제");
+		delItem.addActionListener(e->{
+			Department selectedDept = pTable.getSelectedItem();
+			try {
+				service.deleteDept(selectedDept);
+				pTable.setList(service.selectAll());
+				pTable.loadDatas();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+		
+		popupMenu.add(delItem);
+		return popupMenu;
 	}
 }

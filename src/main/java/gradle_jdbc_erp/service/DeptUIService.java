@@ -25,4 +25,12 @@ public class DeptUIService {
 	public int addDept(Department item) throws SQLException{
 		return deptDao.insertDepartment(item);
 	}
+	
+	public int updateDept(Department item) throws SQLException{
+		return deptDao.updateDepartment(item);
+	}
+	
+	public int deleteDept(Department item) throws SQLException{
+		return deptDao.deleteDepartment(item);
+	}
 }

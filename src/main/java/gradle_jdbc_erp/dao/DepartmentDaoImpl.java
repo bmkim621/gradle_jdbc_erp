@@ -88,12 +88,6 @@ public class DepartmentDaoImpl implements DepartmentDao {
 	}
 
 	@Override
-	public Department selectDepartmentByCode(Department item) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String nextDeptNo() throws SQLException {
 		String sql = "select max(deptno) as nextno from department";
 		String nextStr = null;
