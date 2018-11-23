@@ -1,34 +1,38 @@
 package gradle_jdbc_erp.ui;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.MaskFormatter;
-
-import gradle_jdbc_erp.service.EmployeeUIService;
-import gradle_jdbc_erp.ui.list.EmpListPanel;
-
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.time.LocalDate;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Vector;
 
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
-import javax.swing.JSpinner;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
-import java.awt.Font;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import gradle_jdbc_erp.dto.Department;
+import gradle_jdbc_erp.dto.Employee;
+import gradle_jdbc_erp.dto.Gender;
+import gradle_jdbc_erp.dto.Title;
+import gradle_jdbc_erp.service.EmployeeUIService;
+import gradle_jdbc_erp.ui.list.EmpListPanel;
 
 public class EmpManagementUI extends JFrame implements ActionListener {
 
@@ -44,6 +48,10 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 	private JRadioButton rdbtnMale;
 	private JRadioButton rdbtnFemale;
 	private JFormattedTextField currentDate;
+	private JComboBox<Title> cmbTitle;
+	private JComboBox<Department> cmbDept;
+	private JButton btnAdd;
+	private JSpinner spinnerSalary;
 	
 	public void setpTable(EmpListPanel pTable) {
 		this.pTable = pTable;
@@ -116,8 +124,16 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		lblTitleNo.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblTitleNo);
 		
-		JComboBox comboBox = new JComboBox();
-		panel.add(comboBox);
+		//직책 콤보박스
+		try {
+			DefaultComboBoxModel<Title> titleModel = new DefaultComboBoxModel<>(new Vector<>(empService.selectTitles()));
+			cmbTitle = new JComboBox<>(titleModel);	
+			cmbTitle.setSelectedIndex(-1);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		panel.add(cmbTitle);
 		
 		JLabel lblNewLabel_8 = new JLabel("");
 		panel.add(lblNewLabel_8);
@@ -130,7 +146,7 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		lblSalary.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblSalary);
 		
-		JSpinner spinnerSalary = new JSpinner();
+		spinnerSalary = new JSpinner();
 													//기본값, 최소값, 최대값, stepSize
 		spinnerSalary.setModel(new SpinnerNumberModel(1500000, 1000000, 5000000, 100000));
 		panel.add(spinnerSalary);
@@ -174,8 +190,16 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		lblDeptNo.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblDeptNo);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		panel.add(comboBox_1);
+		
+		try {
+			DefaultComboBoxModel<Department> deptModel = new DefaultComboBoxModel<>(new Vector<>(empService.selectDepts()));
+			cmbDept = new JComboBox<>(deptModel);
+			cmbDept.setSelectedIndex(-1);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		panel.add(cmbDept);
 		
 		JLabel lblNewLabel_17 = new JLabel("");
 		panel.add(lblNewLabel_17);
@@ -190,6 +214,7 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		
 		//입사일
 		tfJoinDate = new JTextField();
+		tfJoinDate.setText(String.format("%tF", new Date()));
 		
 		panel.add(tfJoinDate);
 		tfJoinDate.setColumns(10);
@@ -207,7 +232,8 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		JLabel lblNewLabel_21 = new JLabel("");
 		panel_3.add(lblNewLabel_21);
 		
-		JButton btnAdd = new JButton("추가");
+		btnAdd = new JButton("추가");
+		btnAdd.addActionListener(this);
 		btnAdd.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		panel_3.add(btnAdd);
 		
@@ -236,6 +262,9 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
+		if (arg0.getSource() == btnAdd) {
+			do_btnAdd_actionPerformed(arg0);
+		}
 		if (arg0.getSource() == rdbtnFemale) {
 			do_rdbtnFemale_actionPerformed(arg0);
 		}
@@ -250,5 +279,52 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 	
 	//여자
 	protected void do_rdbtnFemale_actionPerformed(ActionEvent arg0) {
+	}
+	
+	//추가
+	protected void do_btnAdd_actionPerformed(ActionEvent arg0) {
+		Employee emp = getEmployee();
+		int res;
+		try {
+			res = empService.addEmp(emp);
+			if(res == 1) {
+				JOptionPane.showMessageDialog(null, "추가했습니다.");
+				pTable.setList(empService.selectAll());
+				pTable.loadDatas();
+			}
+			clearTf();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	private void clearTf() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	//입력한 값 가지고 오기
+	private Employee getEmployee() {
+		String empNo = tfEmpNo.getText().trim();	//사원번호
+		String empName = tfEmpName.getText().trim();	//사원명
+		Title titleNo = (Title) cmbTitle.getSelectedItem();
+		int salary = (int) spinnerSalary.getValue();
+		Gender gender = null;
+		if(rdbtnFemale.isSelected()) {
+			gender = Gender.FEMALE;
+		} else {
+			gender = Gender.MALE;
+		}
+		Department deptNo = (Department) cmbDept.getSelectedItem();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date joinDate = null;
+		try {
+			joinDate = sdf.parse(tfJoinDate.getText().trim());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return new Employee(empNo, empName, titleNo, salary, gender, deptNo, joinDate);
+		
 	}
 }

@@ -9,7 +9,9 @@ import gradle_jdbc_erp.dao.EmployeeDao;
 import gradle_jdbc_erp.dao.EmployeeDaoImpl;
 import gradle_jdbc_erp.dao.TitleDao;
 import gradle_jdbc_erp.dao.TitleDaoImpl;
+import gradle_jdbc_erp.dto.Department;
 import gradle_jdbc_erp.dto.Employee;
+import gradle_jdbc_erp.dto.Title;
 
 public class EmployeeUIService {
 	private EmployeeDao empDao;
@@ -20,6 +22,14 @@ public class EmployeeUIService {
 		empDao = new EmployeeDaoImpl();
 		deptDao = new DepartmentDaoImpl();
 		titleDao = new TitleDaoImpl();
+	}
+	
+	public List<Title> selectTitles() throws SQLException{
+		return titleDao.selectTitleByAll();
+	}
+	
+	public List<Department> selectDepts() throws SQLException{
+		return deptDao.selectDepartmentByAll();
 	}
 	
 	public List<Employee> selectAll() throws SQLException {

@@ -50,8 +50,23 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 	@Override
 	public int insertEmployee(Employee item) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		String sql = "insert into employee values(?, ?, ?, ?, ?, ?, ?)";
+		
+		int res = 0;
+		try(Connection conn = ConnectionProvider.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql);){
+			pstmt.setString(1, item.getEmpNo());	//사원번호
+			pstmt.setString(2, item.getEmpName());	//사원명
+			pstmt.setString(3, item.getTitleNo().getTitleNo());
+			pstmt.setInt(4, item.getSalary());
+			pstmt.setInt(5, item.getGender() == Gender.FEMALE ? 0 : 1);
+			pstmt.setString(6, item.getDeptNo().getDeptNo());
+			pstmt.setString(7, String.format("%tF", item.getJoinDate()));
+			
+			LogUtil.prnLog(pstmt);
+			res = pstmt.executeUpdate();
+		}
+		return res;
 	}
 
 	@Override
