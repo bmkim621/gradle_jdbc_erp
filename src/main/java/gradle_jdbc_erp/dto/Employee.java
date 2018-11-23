@@ -92,6 +92,31 @@ public class Employee {
 				"Employee [empNo=%s, empName=%s, titleNo=%s, salary=%s, gender=%s, deptNo=%s, joinDate=%s]", empNo,
 				empName, titleNo, salary, gender, deptNo, joinDate);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((empNo == null) ? 0 : empNo.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Employee other = (Employee) obj;
+		if (empNo == null) {
+			if (other.empNo != null)
+				return false;
+		} else if (!empNo.equals(other.empNo))
+			return false;
+		return true;
+	}
 	
 	
 }

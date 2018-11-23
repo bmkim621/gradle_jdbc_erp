@@ -18,8 +18,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -31,7 +33,9 @@ import gradle_jdbc_erp.dto.Department;
 import gradle_jdbc_erp.dto.Employee;
 import gradle_jdbc_erp.dto.Gender;
 import gradle_jdbc_erp.dto.Title;
+import gradle_jdbc_erp.jdbc.LogUtil;
 import gradle_jdbc_erp.service.EmployeeUIService;
+import gradle_jdbc_erp.ui.list.AbstractListPanel;
 import gradle_jdbc_erp.ui.list.EmpListPanel;
 
 @SuppressWarnings("serial")
@@ -41,7 +45,7 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 	private JTextField tfEmpNo;
 	private JTextField tfEmpName;
 	private JTextField tfJoinDate;
-	private EmpListPanel pTable;
+	private AbstractListPanel<Employee> eTable;
 	private EmployeeUIService empService;
 
 	//라디오버튼 하나만 선택되려면 그룹으로 묶어야 함
@@ -56,7 +60,7 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 	private JButton btnCancel;
 	
 	public void setpTable(EmpListPanel pTable) {
-		this.pTable = pTable;
+		this.eTable = pTable;
 	}
 	
 	/**
@@ -255,14 +259,16 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		panel.add(panel_5);
 		
 		//테이블
-		pTable = new EmpListPanel();
+		eTable = new EmpListPanel();
+
 		try {
-			pTable.setList(empService.selectAll());
-			pTable.loadDatas();
+			eTable.setList(empService.selectAll());
+			eTable.loadDatas();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		contentPane.add(pTable, BorderLayout.CENTER);
+		}	
+		eTable.setPopupMenu(createEmpPopupMenu());	//테이블에 팝업메뉴
+		contentPane.add(eTable, BorderLayout.CENTER);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -272,9 +278,31 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		if (e.getActionCommand().equals("추가")) {
 			do_btnAdd_actionPerformed(e);
 		}
+		if (e.getActionCommand().equals("수정")) {
+			do_btnUpdate_actionPerformed(e);
+		}
 	}
 	
-	//추가
+	
+	//수정버튼
+	private void do_btnUpdate_actionPerformed(ActionEvent e) {
+		Employee emp = getEmployee();
+		int res;
+		try {
+			res = empService.updateEmp(emp);
+			if(res == 1) {
+				JOptionPane.showMessageDialog(null, "수정했습니다.");
+				eTable.setList(empService.selectAll());
+				eTable.loadDatas();
+			}
+			clearTf();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		btnAdd.setText("추가");
+	}
+
+	//추가버튼
 	protected void do_btnAdd_actionPerformed(ActionEvent arg0) {
 		
 		try {
@@ -285,8 +313,8 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 
 			if(res == 1) {
 				JOptionPane.showMessageDialog(null, "추가했습니다.");
-				pTable.setList(empService.selectAll());
-				pTable.loadDatas();
+				eTable.setList(empService.selectAll());
+				eTable.loadDatas();
 			}
 			clearTf();
 		} catch (SQLException e) {
@@ -351,9 +379,56 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		return new Employee(empNo, empName, titleNo, salary, gender, deptNo, joinDate);
+		return new Employee(empNo, empName, titleNo, salary, gender, deptNo, joinDate);	
+	}
+	
+	//새로운 값으로 바꾸기
+	private void setEmployee(Employee emp) {
+//		JOptionPane.showMessageDialog(null, emp);
+		tfEmpNo.setText(emp.getEmpNo());
+		tfEmpName.setText(emp.getEmpName());
+		cmbTitle.setSelectedItem(emp.getTitleNo());	//직책
+		spinnerSalary.setValue(emp.getSalary());
+		if(emp.getGender() == Gender.FEMALE) {
+			rdbtnFemale.setSelected(true);
+		}else {
+			rdbtnMale.setSelected(true);
+		}
+		cmbDept.setSelectedItem(emp.getDeptNo()); //부서
+		tfJoinDate.setText(String.format("%tF", emp.getJoinDate()));
 		
 	}
+	
+	//팝업메뉴
+	private JPopupMenu createEmpPopupMenu() {
+		JPopupMenu popupMenu = new JPopupMenu();
+		//수정
+		JMenuItem updateItem = new JMenuItem("수정");
+		updateItem.addActionListener(e->{
+			Employee selectedEmp = eTable.getSelectedItem();
+//			LogUtil.prnLog(selectedEmp.toString());
+			setEmployee(selectedEmp);
+			btnAdd.setText("수정");		
+		});
+		popupMenu.add(updateItem);
+		
+		//삭제
+		JMenuItem delItem = new JMenuItem("삭제");
+		delItem.addActionListener(e->{
+			Employee selectedEmp = eTable.getSelectedItem();
+			try {
+				empService.deleteEmp(selectedEmp);
+				eTable.setList(empService.selectAll());
+				eTable.loadDatas();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		});
+		popupMenu.add(delItem);
+		
+		return popupMenu;
+	}
+
 	
 	
 }

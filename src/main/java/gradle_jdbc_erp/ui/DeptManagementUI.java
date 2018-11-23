@@ -19,6 +19,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import gradle_jdbc_erp.dto.Department;
+import gradle_jdbc_erp.jdbc.LogUtil;
 import gradle_jdbc_erp.service.DeptUIService;
 import gradle_jdbc_erp.ui.list.AbstractListPanel;
 import gradle_jdbc_erp.ui.list.DeptListPanel;
@@ -222,6 +223,7 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 		tfDeptName.setText(dept.getDeptName());
 		tfFloor.setText(dept.getFloor()+"");
 	}
+	
 	//팝업메뉴
 	private JPopupMenu createDeptPopupMenu() {
 		JPopupMenu popupMenu = new JPopupMenu();
@@ -253,8 +255,12 @@ public class DeptManagementUI extends JFrame implements ActionListener {
 				pTable.setList(service.selectAll());
 				pTable.loadDatas();
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				if(e1.getErrorCode() == 1451) { //errorcode 1451 : 참조 무결성
+					JOptionPane.showMessageDialog(null, "해당부서에 소속된 사원이 존재합니다.");
+				} else {
+					LogUtil.prnLog(e1);
+					e1.printStackTrace();
+				}
 			}
 		});
 		

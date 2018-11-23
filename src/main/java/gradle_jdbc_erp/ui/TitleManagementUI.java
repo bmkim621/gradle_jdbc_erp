@@ -9,7 +9,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
 
 import gradle_jdbc_erp.dto.Title;
+import gradle_jdbc_erp.jdbc.LogUtil;
 import gradle_jdbc_erp.service.TitleUIServce;
+import gradle_jdbc_erp.ui.list.AbstractListPanel;
 import gradle_jdbc_erp.ui.list.TitleListPanel;
 
 import java.awt.GridLayout;
@@ -31,7 +33,7 @@ public class TitleManagementUI extends JFrame implements ActionListener {
 	private JTextField tfTitleNo;
 	private JTextField tfTitleName;
 	private TitleUIServce titleService;
-	private TitleListPanel tPanel;
+	private AbstractListPanel<Title> tPanel;
 	private JButton btnAdd;
 	private JButton btnCancel;
 	
@@ -159,7 +161,12 @@ public class TitleManagementUI extends JFrame implements ActionListener {
 				tPanel.setList(titleService.selectAll());
 				tPanel.loadDatas();
 			} catch (SQLException e1) {
-				e1.printStackTrace();
+				if(e1.getErrorCode() == 1451) { //errorcode 1451 : 참조 무결성
+					JOptionPane.showMessageDialog(null, "해당직책을 가진 사원이 존재합니다.");
+				} else {
+					LogUtil.prnLog(e1);
+					e1.printStackTrace();
+				}
 			}
 		});
 		popupMenu.add(delItem);

@@ -18,6 +18,9 @@ public class ErpManagementUI extends JFrame implements ActionListener {
 	private JButton btnDept;
 	private JButton btnDuty;
 	private JButton btnEmp;
+	private DeptManagementUI deptUi;
+	private TitleManagementUI titleUi;
+	private EmpManagementUI empUi;
 
 	/**
 	 * Create the frame.
@@ -61,19 +64,25 @@ public class ErpManagementUI extends JFrame implements ActionListener {
 	
 	//부서관리 버튼
 	protected void do_btnDept_actionPerformed(ActionEvent e) {
-		DeptManagementUI ui = new DeptManagementUI();
-		ui.setVisible(true);
+		if(deptUi == null) {
+			deptUi = new DeptManagementUI();
+		}
+		deptUi.setVisible(true);
 	}
 	
 	//직책관리 버튼
 	protected void do_btnDuty_actionPerformed(ActionEvent e) {
-		TitleManagementUI ui = new TitleManagementUI();
-		ui.setVisible(true);
+		if(titleUi == null) {
+			titleUi = new TitleManagementUI();
+		}
+		titleUi.setVisible(true);
 	}
 	
 	//사원관리 버튼
 	protected void do_btnEmp_actionPerformed(ActionEvent e) {
-		EmpManagementUI ui = new EmpManagementUI();
-		ui.setVisible(true);
+		if(empUi == null) {
+			empUi = new EmpManagementUI();
+		}
+		empUi.setVisible(true);
 	}
 }
