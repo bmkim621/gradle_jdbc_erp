@@ -15,7 +15,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -33,7 +32,6 @@ import gradle_jdbc_erp.dto.Department;
 import gradle_jdbc_erp.dto.Employee;
 import gradle_jdbc_erp.dto.Gender;
 import gradle_jdbc_erp.dto.Title;
-import gradle_jdbc_erp.jdbc.LogUtil;
 import gradle_jdbc_erp.service.EmployeeUIService;
 import gradle_jdbc_erp.ui.list.AbstractListPanel;
 import gradle_jdbc_erp.ui.list.EmpListPanel;
@@ -52,7 +50,6 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JRadioButton rdbtnMale;
 	private JRadioButton rdbtnFemale;
-	private JFormattedTextField currentDate;
 	private JComboBox<Title> cmbTitle;
 	private JComboBox<Department> cmbDept;
 	private JButton btnAdd;
@@ -125,6 +122,29 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		JLabel lblNewLabel_6 = new JLabel("");
 		panel.add(lblNewLabel_6);
 		
+		JLabel lblDeptNo = new JLabel("부서");
+		lblDeptNo.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+		lblDeptNo.setHorizontalAlignment(SwingConstants.CENTER);
+		panel.add(lblDeptNo);
+		
+		
+		//부서 콤보박스
+		try {
+			DefaultComboBoxModel<Department> deptModel = new DefaultComboBoxModel<>(new Vector<>(empService.selectDepts()));
+			cmbDept = new JComboBox<>(deptModel);
+			cmbDept.setSelectedIndex(-1);
+		} catch (SQLException e2) {
+			e2.printStackTrace();
+		}
+		
+		panel.add(cmbDept);
+		
+		JLabel lblNewLabel_8 = new JLabel("");
+		panel.add(lblNewLabel_8);
+		
+		JLabel lblNewLabel_18 = new JLabel("");
+		panel.add(lblNewLabel_18);
+		
 		JLabel lblTitleNo = new JLabel("직책");
 		lblTitleNo.setFont(new Font("맑은 고딕", Font.BOLD, 12));
 		lblTitleNo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -141,11 +161,11 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		}
 		panel.add(cmbTitle);
 		
-		JLabel lblNewLabel_8 = new JLabel("");
-		panel.add(lblNewLabel_8);
-		
 		JLabel lblNewLabel_9 = new JLabel("");
 		panel.add(lblNewLabel_9);
+		
+		JLabel lblNewLabel_12 = new JLabel("");
+		panel.add(lblNewLabel_12);
 		
 		JLabel lblSalary = new JLabel("급여");
 		lblSalary.setFont(new Font("맑은 고딕", Font.BOLD, 12));
@@ -160,8 +180,8 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		JLabel lblNewLabel_11 = new JLabel("");
 		panel.add(lblNewLabel_11);
 		
-		JLabel lblNewLabel_12 = new JLabel("");
-		panel.add(lblNewLabel_12);
+		JLabel lblNewLabel_14 = new JLabel("");
+		panel.add(lblNewLabel_14);
 		
 		JLabel lblGender = new JLabel("성별");
 		lblGender.setFont(new Font("맑은 고딕", Font.BOLD, 12));
@@ -185,33 +205,11 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		rdbtnFemale.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		panel_1.add(rdbtnFemale);
 		
-		JLabel lblNewLabel_14 = new JLabel("");
-		panel.add(lblNewLabel_14);
-		
 		JLabel lblNewLabel_15 = new JLabel("");
 		panel.add(lblNewLabel_15);
-		
-		JLabel lblDeptNo = new JLabel("부서");
-		lblDeptNo.setFont(new Font("맑은 고딕", Font.BOLD, 12));
-		lblDeptNo.setHorizontalAlignment(SwingConstants.CENTER);
-		panel.add(lblDeptNo);
-		
-		//직책 콤보박스
-		try {
-			DefaultComboBoxModel<Department> deptModel = new DefaultComboBoxModel<>(new Vector<>(empService.selectDepts()));
-			cmbDept = new JComboBox<>(deptModel);
-			cmbDept.setSelectedIndex(-1);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		panel.add(cmbDept);
-		
+				
 		JLabel lblNewLabel_17 = new JLabel("");
 		panel.add(lblNewLabel_17);
-		
-		JLabel lblNewLabel_18 = new JLabel("");
-		panel.add(lblNewLabel_18);
 		
 		JLabel lblJoinDate = new JLabel("입사일");
 		lblJoinDate.setFont(new Font("맑은 고딕", Font.BOLD, 12));
