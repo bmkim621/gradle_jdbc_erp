@@ -71,6 +71,30 @@ public class EmployeeDaoTest {
 				JOptionPane.showMessageDialog(null, "이미 존재하는 사원입니다.");
 			}
 		}
+		test01selectEmployeeByAll();
+	}
+	
+	@Test
+	public void test03updateEmployee() throws SQLException{
+		LogUtil.prnLog("==> updateEmployee()");
+		Date date = new Date();
+		Employee updateEmp = new Employee("E017002", "나대리", new Title("T003"), 3000000, Gender.MALE, new Department("D003"), date);
+		try {
+			int res = dao.updateEmployee(updateEmp);
+			Assert.assertEquals(1, res);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		test01selectEmployeeByAll();
+	}
+	
+	
+	@Test
+	public void test04deleteEmployee() throws SQLException{
+		LogUtil.prnLog("==> deleteEmployee()");
+		Employee delEmp = new Employee("E017002");
+		int res = dao.deleteEmployee(delEmp);
+		test01selectEmployeeByAll();
 	}
 
 }

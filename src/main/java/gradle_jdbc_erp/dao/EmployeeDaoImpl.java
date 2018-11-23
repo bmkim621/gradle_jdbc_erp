@@ -71,14 +71,35 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 	@Override
 	public int deleteEmployee(Employee item) throws SQLException {
-		// TODO Auto-generated method stub
+		String sql = "DELETE FROM employee WHERE empno=?";
+		int res = 0;
+		try(Connection conn = ConnectionProvider.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql);){
+			pstmt.setString(1, item.getEmpNo());
+			LogUtil.prnLog(pstmt);
+			
+			res = pstmt.executeUpdate();
+		}
 		return 0;
 	}
 
 	@Override
 	public int updateEmployee(Employee item) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		String sql = "UPDATE employee SET empname=?, titleno=?, salary=?, gender=?, deptno=?, joindate=? WHERE empno=?";
+		int res = 0;
+		try(Connection conn = ConnectionProvider.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql);){
+			pstmt.setString(1, item.getEmpName()); //사원명
+			pstmt.setString(2, item.getTitleNo().getTitleNo()); //직책
+			pstmt.setInt(3, item.getSalary()); //급여
+			pstmt.setInt(4, item.getGender() == Gender.FEMALE ? 0 : 1); //성별
+			pstmt.setString(5, item.getDeptNo().getDeptNo());
+			pstmt.setString(6, String.format("%tF", item.getJoinDate())); //입사일
+			pstmt.setString(7, item.getEmpNo()); //사원번호
+			
+			res = pstmt.executeUpdate();
+		}
+		return res;
 	}
 
 	@Override

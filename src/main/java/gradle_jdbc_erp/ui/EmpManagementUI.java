@@ -34,6 +34,7 @@ import gradle_jdbc_erp.dto.Title;
 import gradle_jdbc_erp.service.EmployeeUIService;
 import gradle_jdbc_erp.ui.list.EmpListPanel;
 
+@SuppressWarnings("serial")
 public class EmpManagementUI extends JFrame implements ActionListener {
 
 	private JPanel contentPane;
@@ -52,6 +53,7 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 	private JComboBox<Department> cmbDept;
 	private JButton btnAdd;
 	private JSpinner spinnerSalary;
+	private JButton btnCancel;
 	
 	public void setpTable(EmpListPanel pTable) {
 		this.pTable = pTable;
@@ -168,7 +170,7 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		
 		rdbtnMale = new JRadioButton("남");
 		rdbtnMale.setSelected(true);	//남자가 선택되어짐
-		buttonGroup.add(rdbtnMale); //라디오 버튼 그룹
+		buttonGroup.add(rdbtnMale); //라디오 버튼 그룹(하나만 선택하기 위해서)
 		rdbtnMale.addActionListener(this);
 		rdbtnMale.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		panel_1.add(rdbtnMale);
@@ -190,7 +192,7 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		lblDeptNo.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblDeptNo);
 		
-		
+		//직책 콤보박스
 		try {
 			DefaultComboBoxModel<Department> deptModel = new DefaultComboBoxModel<>(new Vector<>(empService.selectDepts()));
 			cmbDept = new JComboBox<>(deptModel);
@@ -241,7 +243,8 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		panel.add(panel_4);
 		panel_4.setLayout(new GridLayout(0, 2, 0, 0));
 		
-		JButton btnCancel = new JButton("삭제");
+		btnCancel = new JButton("취소");
+		btnCancel.addActionListener(this);
 		btnCancel.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
 		panel_4.add(btnCancel);
 		
@@ -251,6 +254,7 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		JPanel panel_5 = new JPanel();
 		panel.add(panel_5);
 		
+		//테이블
 		pTable = new EmpListPanel();
 		try {
 			pTable.setList(empService.selectAll());
@@ -261,32 +265,24 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		contentPane.add(pTable, BorderLayout.CENTER);
 	}
 
-	public void actionPerformed(ActionEvent arg0) {
-		if (arg0.getSource() == btnAdd) {
-			do_btnAdd_actionPerformed(arg0);
+	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equals("취소")) {
+			clearTf();
 		}
-		if (arg0.getSource() == rdbtnFemale) {
-			do_rdbtnFemale_actionPerformed(arg0);
+		if (e.getActionCommand().equals("추가")) {
+			do_btnAdd_actionPerformed(e);
 		}
-		if (arg0.getSource() == rdbtnMale) {
-			do_rdbtnMale_actionPerformed(arg0);
-		}
-	}
-	
-	//남자
-	protected void do_rdbtnMale_actionPerformed(ActionEvent arg0) {
-	}
-	
-	//여자
-	protected void do_rdbtnFemale_actionPerformed(ActionEvent arg0) {
 	}
 	
 	//추가
 	protected void do_btnAdd_actionPerformed(ActionEvent arg0) {
-		Employee emp = getEmployee();
-		int res;
+		
 		try {
-			res = empService.addEmp(emp);
+			vaildCheck();
+			
+			Employee emp = getEmployee();
+			int res = empService.addEmp(emp);
+
 			if(res == 1) {
 				JOptionPane.showMessageDialog(null, "추가했습니다.");
 				pTable.setList(empService.selectAll());
@@ -295,12 +291,43 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 			clearTf();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} catch (Exception e) {	//사원명이 비어있는 경우
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
 		
 	}
 
+	//검사
+	private void vaildCheck() throws Exception {
+		//사원명이 비어있는 경우
+		if(tfEmpName.getText().equals("")) {
+			tfEmpName.requestFocus();
+			throw new Exception("사원명을 입력해주세요.");	//예외를 만든다.
+		}
+		//직책이 선택되어있지 않은 경우
+		if(cmbTitle.getSelectedIndex() == -1) {
+			throw new Exception("직책을 선택해주세요.");
+		}
+		if(cmbDept.getSelectedIndex() == -1) {
+			throw new Exception("부서를 선택해주세요.");
+		}
+		
+	}
+
+	//텍스트 필드 초기화하기
 	private void clearTf() {
-		// TODO Auto-generated method stub
+		try {
+			tfEmpNo.setText(empService.nextEmpNo());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		tfEmpName.setText("");
+		cmbTitle.setSelectedIndex(-1);
+		spinnerSalary.setValue(1500000);
+		rdbtnMale.setSelected(true);
+		cmbDept.setSelectedIndex(-1);
+		tfJoinDate.setText(String.format("%tF", new Date()));
+		tfEmpName.requestFocus();
 		
 	}
 
@@ -327,4 +354,6 @@ public class EmpManagementUI extends JFrame implements ActionListener {
 		return new Employee(empNo, empName, titleNo, salary, gender, deptNo, joinDate);
 		
 	}
+	
+	
 }
